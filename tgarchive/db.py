@@ -17,6 +17,7 @@ CREATE table messages (
     reply_to INTEGER,
     user_id INTEGER,
     media_id INTEGER,
+    json_dump JSON,
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(media_id) REFERENCES media(id)
 );
@@ -44,7 +45,7 @@ User = namedtuple(
     "User", ["id", "username", "first_name", "last_name", "tags", "avatar"])
 
 Message = namedtuple(
-    "Message", ["id", "type", "date", "edit_date", "content", "reply_to", "user", "media"])
+    "Message", ["id", "type", "date", "edit_date", "content", "reply_to", "user", "media", "json_dump"])
 
 Media = namedtuple(
     "Media", ["id", "type", "url", "title", "description", "thumb"])
@@ -154,7 +155,7 @@ class DB:
             SELECT messages.id, messages.type, messages.date, messages.edit_date,
             messages.content, messages.reply_to, messages.user_id,
             users.username, users.first_name, users.last_name, users.tags, users.avatar,
-            media.id, media.type, media.url, media.title, media.description, media.thumb
+            media.id, media.type, media.url, media.title, media.description, media.thumb, json_dump
             FROM messages
             LEFT JOIN users ON (users.id = messages.user_id)
             LEFT JOIN media ON (media.id = messages.media_id)
@@ -201,8 +202,8 @@ class DB:
     def insert_message(self, m: Message):
         cur = self.conn.cursor()
         cur.execute("""INSERT OR REPLACE INTO messages
-            (id, type, date, edit_date, content, reply_to, user_id, media_id)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?)""",
+            (id, type, date, edit_date, content, reply_to, user_id, media_id, json_dump)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (m.id,
                      m.type,
                      m.date.strftime("%Y-%m-%d %H:%M:%S"),
@@ -211,7 +212,8 @@ class DB:
                      m.content,
                      m.reply_to,
                      m.user.id,
-                     m.media.id if m.media else None)
+                     m.media.id if m.media else None,
+                     m.json_dump)
                     )
 
     def commit(self):
@@ -222,7 +224,7 @@ class DB:
         """Makes a Message() object from an SQL result tuple."""
         id, typ, date, edit_date, content, reply_to, \
             user_id, username, first_name, last_name, tags, avatar, \
-            media_id, media_type, media_url, media_title, media_description, media_thumb = m
+            media_id, media_type, media_url, media_title, media_description, media_thumb, json_dump = m
 
         md = None
         if media_id:
@@ -256,4 +258,5 @@ class DB:
                                  last_name=last_name,
                                  tags=tags,
                                  avatar=avatar),
-                       media=md)
+                       media=md,
+                       json_dump=json_dump)
