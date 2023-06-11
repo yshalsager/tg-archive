@@ -183,7 +183,8 @@ class Sync:
                 content=sticker if sticker else m.raw_text,
                 reply_to=m.reply_to_msg_id if m.reply_to and m.reply_to.reply_to_msg_id else None,
                 user=self._get_user(m.sender, m.chat),
-                media=med
+                media=med,
+                json_dump=m.to_json(ensure_ascii=False),
             )
 
     def _fetch_messages(self, group, offset_id, ids=None) -> Message:
