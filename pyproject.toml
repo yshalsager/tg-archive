@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "tg-archive"
+version = "1.1.2"
+description = "A tool for exporting Telegram group chats into static websites, preserving the chat history like mailing list archives."
+authors = ["Kailash Nadh <kailash@nadh.in>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/knadh/tg-archive"
+repository = "https://github.com/knadh/tg-archive"
+classifiers = [
+    "Topic :: Communications :: Chat",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+    "Topic :: Documentation"
+]
+packages = [{ include = "tgarchive" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Telethon = "1.28.5"
+Jinja2 = "^3.1.2"
+PyYAML = "^5.4.1"
+cryptg = "0.4.0"
+pytz = "^2023.3"
+pillow = "^9.5.0"
+feedgen = "^0.9.0"
+python-magic = "^0.4.27"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+tg-archive = "tgarchive:main"
